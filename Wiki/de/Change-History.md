@@ -4,6 +4,8 @@
 
 | Datum | Änderung |
 |---|---|
+| 2026-07-30 | **Neu:** Installer meldet die Versionsänderung (`updated M29… -> M30…`) und kennt `-UpdateModule`, um ImportExcel bei Bedarf mit zu aktualisieren (Issue #4) |
+| 2026-07-30 | Installer unter Windows PowerShell 5.1 und PowerShell 7.x geprüft: Erstinstallation, Update, unveränderter Lauf, Deinstallation und der `irm \| iex`-Aufrufweg verhalten sich identisch |
 | 2026-07-30 | **Fix:** `-ApiPassword` ohne Wert brach mit einem PowerShell-Bindungsfehler ab, statt das Passwort abzufragen (Issue #3). Der Parameter nimmt jetzt beide Formen an. |
 | 2026-07-30 | **Fix:** Umlaute in Teilnehmernamen wurden im Excel-Export zerstört (Issue #2). `api2hipath.exe` liefert Windows-1252, `Import-Csv` las die Dateien als UTF-8 — jeder Umlaut wurde zu `U+FFFD`. Betraf 255 Zellen je Lauf. |
 | 2026-07-30 | **Neu:** Hilfsfunktion `Import-ApiCsv` mit Zeichensatz-Erkennung aus dem Dateiinhalt (gültiges UTF-8 bleibt UTF-8, sonst Windows-1252). Alle 11 CSV-Importe umgestellt. |
