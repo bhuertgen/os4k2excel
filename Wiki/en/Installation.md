@@ -16,7 +16,9 @@ Step-by-step guide for installing os4k2excel.
 ### System
 
 - **Windows:** 10, 11, Server 2016+
-- **PowerShell:** 5.1+ (included with Windows)
+- **PowerShell:** 5.1 or 7.x — both tested (5.1.26100.8875 and 7.6.4).
+  PowerShell 7 is recommended for production, see
+  [PowerShell 5.1 and 7.x](PowerShell-Compatibility.md)
 - **.NET Framework:** 4.5+ (included with Windows)
 
 ### Software

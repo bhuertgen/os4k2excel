@@ -25,6 +25,10 @@
 .PARAMETER NoModule
     Do not install the ImportExcel module, even if it is missing.
 
+.PARAMETER UpdateModule
+    Also update the ImportExcel module when a newer version is available.
+    Without this switch an already installed module is left untouched.
+
 .PARAMETER Uninstall
     Removes the scripts, the directory and the PATH entry again.
 
@@ -41,6 +45,7 @@ param(
     [string]$Ref = 'main',
     [switch]$NoPath,
     [switch]$NoModule,
+    [switch]$UpdateModule,
     [switch]$Uninstall
 )
 
@@ -98,6 +103,68 @@ function Remove-FromPath {
     return $true
 }
 
+#---------------------------------------------------------------- version help
+# Reads the version out of a script file, so an update can report what changed.
+function Get-ScriptVersion {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return $null }
+    try {
+        $line = Select-String -LiteralPath $Path -Pattern '^\$ScriptVersion\s*=\s*"([^"]+)"' |
+                Select-Object -First 1
+        if ($line) { return $line.Matches[0].Groups[1].Value }
+    }
+    catch { }
+    return $null
+}
+
+#--------------------------------------------------------------- gallery help
+# On a freshly installed Windows the NuGet provider is missing and the PSGallery
+# is registered as untrusted. Both make Install-Module ask a question, which
+# fails in a non-interactive session. Returns the previous installation policy
+# so the caller can restore it.
+function Initialize-Gallery {
+    try {
+        $nuget = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
+        if (-not $nuget -or $nuget.Version -lt [version]'2.8.5.201') {
+            Write-Step '  providing the NuGet package provider ...'
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 `
+                -Scope CurrentUser -Force -ErrorAction Stop | Out-Null
+            Import-PackageProvider -Name NuGet -Force -ErrorAction SilentlyContinue | Out-Null
+            Write-Ok 'NuGet package provider ready'
+        }
+    }
+    catch { Write-Warn "Could not provide the NuGet package provider: $($_.Exception.Message)" }
+
+    $policyBefore = $null
+    try {
+        $repo = Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue
+        if ($repo -and $repo.InstallationPolicy -ne 'Trusted') {
+            $policyBefore = $repo.InstallationPolicy
+            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -ErrorAction Stop
+        }
+    }
+    catch { Write-Warn "Could not change the PSGallery setting: $($_.Exception.Message)" }
+
+    return $policyBefore
+}
+
+function Restore-Gallery {
+    param($PolicyBefore)
+    if ($PolicyBefore) {
+        try { Set-PSRepository -Name PSGallery -InstallationPolicy $PolicyBefore } catch { }
+    }
+}
+
+function Write-ModuleHelp {
+    Write-Note 'Later, with internet access:'
+    Write-Note '  Install-Module ImportExcel -Scope CurrentUser'
+    Write-Note 'Without internet access on this machine - on another PC:'
+    Write-Note '  Save-Module ImportExcel -Path C:\Transfer'
+    Write-Note 'then copy the ImportExcel folder to'
+    Write-Note '  %USERPROFILE%\Documents\WindowsPowerShell\Modules   (PowerShell 5.1)'
+    Write-Note '  %USERPROFILE%\Documents\PowerShell\Modules          (PowerShell 7.x)'
+}
+
 #-------------------------------------------------------------------- uninstall
 if ($Uninstall) {
     Write-Host 'Uninstall' -ForegroundColor Cyan
@@ -137,40 +204,49 @@ if ($psv.Major -lt 6) {
 
 $ie = Get-Module -ListAvailable -Name ImportExcel -ErrorAction SilentlyContinue |
       Sort-Object Version -Descending | Select-Object -First 1
-if ($ie) {
+
+if ($ie -and -not $UpdateModule) {
     Write-Ok "ImportExcel module $($ie.Version)"
+    Write-Note 'Use -UpdateModule to check the gallery for a newer version.'
+}
+elseif ($ie -and $UpdateModule) {
+    Write-Ok "ImportExcel module $($ie.Version) installed"
+    Write-Step '  checking the PowerShell Gallery for a newer version ...'
+    $policyBefore = Initialize-Gallery
+    try {
+        $latest = (Find-Module -Name ImportExcel -ErrorAction Stop).Version
+        if ($latest -gt $ie.Version) {
+            Write-Step "  updating $($ie.Version) -> $latest ..."
+            # Update-Module only works for modules installed through
+            # Install-Module. A module copied in by hand (offline install) makes
+            # it fail, so fall back to a plain install of the current version.
+            try {
+                Update-Module -Name ImportExcel -Force -ErrorAction Stop
+            }
+            catch {
+                Write-Note '  Update-Module not applicable, installing instead ...'
+                Install-Module -Name ImportExcel -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
+            }
+            $new = Get-Module -ListAvailable -Name ImportExcel |
+                   Sort-Object Version -Descending | Select-Object -First 1
+            Write-Ok "ImportExcel updated to $($new.Version)"
+        }
+        else {
+            Write-Ok "ImportExcel $($ie.Version) is already the newest version"
+        }
+    }
+    catch {
+        Write-Warn "Update check failed: $($_.Exception.Message)"
+        Write-Note "The installed version $($ie.Version) is kept."
+    }
+    finally { Restore-Gallery $policyBefore }
 }
 elseif ($NoModule) {
     Write-Warn 'ImportExcel module missing (-NoModule set, no installation).'
 }
 else {
     Write-Step 'ImportExcel module missing - installing from the PowerShell Gallery ...'
-
-    # On a freshly installed Windows the NuGet provider is missing and the
-    # PSGallery is registered as untrusted. Both make Install-Module ask a
-    # question, which fails in a non-interactive session.
-    try {
-        $nuget = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
-        if (-not $nuget -or $nuget.Version -lt [version]'2.8.5.201') {
-            Write-Step '  providing the NuGet package provider ...'
-            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 `
-                -Scope CurrentUser -Force -ErrorAction Stop | Out-Null
-            Import-PackageProvider -Name NuGet -Force -ErrorAction SilentlyContinue | Out-Null
-            Write-Ok 'NuGet package provider ready'
-        }
-    }
-    catch { Write-Warn "Could not provide the NuGet package provider: $($_.Exception.Message)" }
-
-    $policyBefore = $null
-    try {
-        $repo = Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue
-        if ($repo -and $repo.InstallationPolicy -ne 'Trusted') {
-            $policyBefore = $repo.InstallationPolicy
-            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -ErrorAction Stop
-        }
-    }
-    catch { Write-Warn "Could not change the PSGallery setting: $($_.Exception.Message)" }
-
+    $policyBefore = Initialize-Gallery
     try {
         Install-Module -Name ImportExcel -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
         $ie = Get-Module -ListAvailable -Name ImportExcel |
@@ -182,19 +258,9 @@ else {
         Write-Warn "Installation failed: $($_.Exception.Message)"
         Write-Note 'This is not fatal - the script also writes CSV without the module.'
         Write-Note ''
-        Write-Note 'Later, with internet access:'
-        Write-Note '  Install-Module ImportExcel -Scope CurrentUser'
-        Write-Note 'Without internet access on this machine - on another PC:'
-        Write-Note '  Save-Module ImportExcel -Path C:\Transfer'
-        Write-Note 'then copy the ImportExcel folder to'
-        Write-Note '  %USERPROFILE%\Documents\WindowsPowerShell\Modules   (PowerShell 5.1)'
-        Write-Note '  %USERPROFILE%\Documents\PowerShell\Modules          (PowerShell 7.x)'
+        Write-ModuleHelp
     }
-    finally {
-        if ($policyBefore) {
-            try { Set-PSRepository -Name PSGallery -InstallationPolicy $policyBefore } catch { }
-        }
-    }
+    finally { Restore-Gallery $policyBefore }
 }
 
 #------------------------------------------------------------------- download
@@ -205,6 +271,10 @@ if (-not (Test-Path -LiteralPath $InstallDir)) {
     New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 }
 Write-Step "target directory: $InstallDir"
+
+# Remember what is already installed, so the summary can report the change.
+$versionBefore = Get-ScriptVersion (Join-Path $InstallDir 'os4k2excel.ps1')
+if ($versionBefore) { Write-Note "found installed version $versionBefore" }
 
 $base = "https://raw.githubusercontent.com/$Repo/$Ref"
 foreach ($file in ($Scripts + $Extras)) {
@@ -233,6 +303,14 @@ foreach ($file in $Scripts) {
     }
 }
 Write-Ok 'syntax check passed'
+
+# Report what the download actually changed.
+$versionAfter = Get-ScriptVersion (Join-Path $InstallDir 'os4k2excel.ps1')
+if ($versionAfter) {
+    if (-not $versionBefore)              { Write-Ok "version $versionAfter installed" }
+    elseif ($versionBefore -eq $versionAfter) { Write-Ok "version $versionAfter (unchanged, already up to date)" }
+    else                                  { Write-Ok "updated $versionBefore -> $versionAfter" }
+}
 
 #------------------------------------------------------------------------ PATH
 if ($NoPath) {

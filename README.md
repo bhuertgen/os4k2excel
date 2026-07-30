@@ -38,7 +38,26 @@ $u = 'https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1'
 | `-Ref <branch\|tag>` | install a specific version (default `main`) |
 | `-NoPath` | do not modify PATH |
 | `-NoModule` | do not install ImportExcel |
+| `-UpdateModule` | also update ImportExcel if a newer version exists |
 | `-Uninstall` | remove scripts, directory and PATH entry |
+
+### Updating
+
+Run the installer again over an existing installation — that is the intended
+update path. It overwrites the scripts, reports the version change
+(`updated M29… -> M30…`) and does **not** create a duplicate PATH entry.
+
+```powershell
+# update to the current development state
+irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | iex
+
+# pin to a release instead — recommended for production
+$u = 'https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1'
+& ([scriptblock]::Create((irm $u))) -Ref v30.0
+```
+
+An already installed ImportExcel module is left untouched unless you pass
+`-UpdateModule`.
 
 ### Installing without `irm | iex`
 
@@ -73,9 +92,27 @@ Full step-by-step guide: [Wiki — Installation (EN)](Wiki/en/Installation.md) �
 | Component | Version | Note |
 |---|---|---|
 | Windows | 10 / 11 / Server 2016+ | |
-| PowerShell | 5.1+ | Windows PowerShell, included with Windows |
-| .NET Framework | 4.5+ | required by PowerShell 5.1 and ImportExcel |
+| PowerShell | 5.1 **or** 7.x | both tested, see below |
+| .NET Framework | 4.5+ | required by Windows PowerShell 5.1 and ImportExcel |
 | ImportExcel | 7.x | `Install-Module ImportExcel -Scope CurrentUser` |
+
+### Tested PowerShell versions
+
+Script and installer are verified on both editions — same data, same workbook:
+
+| Edition | Tested with | Status |
+|---|---|---|
+| Windows PowerShell 5.1 (Desktop) | 5.1.26100.8875 | supported |
+| PowerShell 7.x (Core) | 7.6.4 | supported, recommended |
+
+PowerShell 7 is the better choice for production: the exit code of
+`api2hipath.exe` is reported correctly and redirected console output stays
+readable. On 5.1 the result is functionally equivalent — details in
+[PowerShell compatibility](Wiki/en/PowerShell-Compatibility.md).
+
+> The two editions use **separate module directories**. `Install-Module
+> ImportExcel` in one does not install it for the other; if you switch editions,
+> install the module twice.
 
 ### api2hipath.exe
 
@@ -291,7 +328,8 @@ irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | ie
 .\os4k2excel.ps1 -ApiHost "<IP>" -ApiUser "<BENUTZER>"
 ```
 
-Voraussetzungen: Windows PowerShell 5.1 oder PowerShell 7.x, das Modul
+Voraussetzungen: Windows PowerShell 5.1 oder PowerShell 7.x — beide getestet
+(5.1.26100.8875 und 7.6.4), das Modul
 ImportExcel (wird vom Installer eingerichtet) und `api2hipath.exe` aus dem
 OpenScape 4000 Assistant/Manager. Microsoft Excel wird nicht benötigt.
 
