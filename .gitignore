@@ -1,0 +1,80 @@
+# =============================================================================
+#  Customer data / Kundendaten - never commit
+# =============================================================================
+# Exports and reports from a live PBX contain extension numbers, subscriber
+# names, IP addresses and system identifiers.
+# Exporte und Berichte einer produktiven Anlage enthalten Rufnummern,
+# Teilnehmernamen, IP-Adressen und Anlagenkennungen.
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+*.tsv
+*.log
+*.pdf
+*.png
+*.jpg
+*.jpeg
+# exception: documentation screenshots, checked for customer data
+!Wiki/*.png
+*.txt
+reporte/
+reports/
+berichte/
+PICKUP/
+testlogs/
+*Arbeitsnachweis*
+*Analysebericht*
+OS4K-*.csv
+OS4K-*.log
+
+# Vendor documentation - copyrighted, must not be redistributed
+# Herstellerdokumentation - urheberrechtlich geschuetzt, keine Weitergabe
+OS4K_API_Documentation.md
+*XIE*API*Service*Documentation*
+*Service?Documentation*
+
+# Analysis and presentation output
+*.html
+*.htm
+
+# Credentials
+*.cred
+*credentials*
+*password*
+*passwort*
+*secret*
+*token*
+*.pfx
+*.p12
+*.key
+*.pem
+.env
+.env.*
+
+# Archives and backups
+*.zip
+*.7z
+*.rar
+*.bak
+*.backup
+*~
+
+# Windows / editors
+Thumbs.db
+desktop.ini
+Desktop.ini
+$RECYCLE.BIN/
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# PowerShell
+*.ps1xml
+
+# Claude Code
+.claude/
+.claude.backup-*/
+CLAUDE.local.md
