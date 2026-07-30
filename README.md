@@ -18,7 +18,7 @@ im [Wiki](Wiki/de/Home.md).*
 ## Installation
 
 ```powershell
-irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1 | iex
+irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | iex
 ```
 
 Installs into `%LOCALAPPDATA%\Programs\os4k2excel`, adds that folder to the user
@@ -28,14 +28,14 @@ module if it is missing.
 With options:
 
 ```powershell
-$u = 'https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1'
+$u = 'https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1'
 & ([scriptblock]::Create((irm $u))) -InstallDir 'C:\Tools' -NoPath
 ```
 
 | Option | Meaning |
 |---|---|
 | `-InstallDir <path>` | different target directory |
-| `-Ref <branch\|tag>` | install a specific version (default `master`) |
+| `-Ref <branch\|tag>` | install a specific version (default `main`) |
 | `-NoPath` | do not modify PATH |
 | `-NoModule` | do not install ImportExcel |
 | `-Uninstall` | remove scripts, directory and PATH entry |
@@ -47,7 +47,7 @@ without the installer — it has no dependencies apart from ImportExcel.
 
 ```powershell
 # single file
-$url = 'https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/os4k2excel.ps1'
+$url = 'https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/os4k2excel.ps1'
 Invoke-WebRequest -Uri $url -OutFile .\os4k2excel.ps1 -UseBasicParsing
 Unblock-File .\os4k2excel.ps1
 
@@ -285,7 +285,7 @@ getrennt ausgewiesen. Ein Webserver für den Aufruf über den Browser liegt bei.
 
 ```powershell
 # Installation
-irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1 | iex
+irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | iex
 
 # Aufruf — Passwort wird maskiert abgefragt
 .\os4k2excel.ps1 -ApiHost "<IP>" -ApiUser "<BENUTZER>"

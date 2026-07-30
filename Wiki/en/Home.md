@@ -15,7 +15,7 @@ telephone system and writes it to a formatted Excel report.
 ### Installation
 
 ```powershell
-irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1 | iex
+irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | iex
 ```
 
 See **[Installation](Installation.md)** for the detailed walkthrough:

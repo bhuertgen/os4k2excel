@@ -6,7 +6,7 @@ Step-by-step guide for installing os4k2excel.
 
 > **Shortcut:** the installer does steps 1 and 2 for you:
 > ```powershell
-> irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1 | iex
+> irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | iex
 > ```
 > Steps 3 to 5 — the Export Table Client and the API user on the PBX — always
 > have to be done by hand.

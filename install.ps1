@@ -8,16 +8,16 @@
     that "os4k2excel.ps1" can be called from any directory.
 
     Quick install:
-        irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1 | iex
+        irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1 | iex
 
     With options:
-        & ([scriptblock]::Create((irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/master/install.ps1))) -InstallDir 'C:\Tools' -NoPath
+        & ([scriptblock]::Create((irm https://raw.githubusercontent.com/bhuertgen/os4k2excel/main/install.ps1))) -InstallDir 'C:\Tools' -NoPath
 
 .PARAMETER InstallDir
     Target directory. Default: %LOCALAPPDATA%\Programs\os4k2excel
 
 .PARAMETER Ref
-    Branch, tag or commit to install from. Default: master
+    Branch, tag or commit to install from. Default: main
 
 .PARAMETER NoPath
     Do not add the target directory to the user PATH.
@@ -38,7 +38,7 @@
 [CmdletBinding()]
 param(
     [string]$InstallDir,
-    [string]$Ref = 'master',
+    [string]$Ref = 'main',
     [switch]$NoPath,
     [switch]$NoModule,
     [switch]$Uninstall
