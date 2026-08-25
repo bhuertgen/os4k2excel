@@ -18,7 +18,7 @@ These tables are queried through `api2hipath.exe`:
 | **HUNTGRP_SERVICE** | hunt group services |
 | **PICKUPGRP** | pickup groups — **new in M26** |
 | **PICKUP_SUB** | pickup group members — **new in M26** |
-| **PERSPORT** | port connection types |
+| **PERSPORT** | port connection types, department |
 | **DEVCONST** | device configurations |
 
 The **PORT** table is queried once per site (domain/switch).

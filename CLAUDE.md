@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Version
 
-Current: **M30.20260730.1649** — Format: `M<Meilenstein>.<Datum:yyyymmdd>.<Zeit:hhmm>`
+Current: **M31.20260825.1532** — Format: `M<Meilenstein>.<Datum:yyyymmdd>.<Zeit:hhmm>`
 
 ## Project Overview
 

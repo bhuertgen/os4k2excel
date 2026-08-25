@@ -1,6 +1,6 @@
 ﻿# .SYNOPSIS
 #    os4k2excel - OpenScape 4000 Port & Lizenz Export
-#    Version: M30.20260730.1649
+#    Version: M31.20260825.1532
 #
 #    Verarbeitet PORT-Daten aus der OpenScape 4000 API und erstellt eine Excel-Datei mit verknüpften Daten.
 #
@@ -29,6 +29,7 @@
 #      2026-02-15: Standorte automatisch aus SWITCH-Tabelle (API) statt Hardcodierung.
 #      2026-03-17: Neu: PEN/HVT-Zuordnung via -IncludePenData (OS4K-4).
 #      2026-03-24: Neu: Interaktive Credential-Abfrage wenn -ApiUser/-ApiPassword fehlen (OS4K-5).
+#      2026-07-30: Neu: Spalte "department" aus PERSPORT hinter displayname (Issue #5).
 #
 # .PARAMETER ApiPath
 #    Pfad zur API-Executable.
@@ -200,7 +201,7 @@ if ([string]::IsNullOrWhiteSpace($ApiPasswordKlartext)) {
 }
 
 # --- Version ---
-$ScriptVersion = "M30.20260730.1649"
+$ScriptVersion = "M31.20260825.1532"
 Write-Host "os4k2excel Version: $ScriptVersion" -ForegroundColor Cyan
 
 # --- PERFORMANCE: Stapelgröße erhöhen ---
@@ -315,7 +316,7 @@ $tables = @(
     @{ Name = "HUNTGRP_SERVICE"; Fields = "domain,switch_name,group_idx,huntgrp_node_id,overflow_ext" },
     @{ Name = "PICKUPGRP"; Fields = "domain,switch_name,pickupgrpnum,displ,info" },
     @{ Name = "PICKUP_SUB"; Fields = "domain,switch_name,extension,pickupgrpnum" },
-    @{ Name = "PERSPORT"; Fields = "domain,switch_name,extension,connect_type" },
+    @{ Name = "PERSPORT"; Fields = "domain,switch_name,extension,connect_type,department" },
     @{ Name = "DEVCONST"; Fields = "adaptor_1,adaptor_2,addon_text,addon_typ,chargeindic,cnt_of_devices,consistent,devconame,devtext1,devtext2,devtext3,devtext4,devtext5,devtext6,devtyp1,devtyp2,devtyp3,devtyp4,devtyp5,devtyp6,display,exact_dev_text,exact_dev_typ,funct_included,handsfree,headset,idcard_rd,info,opticom,recorder,sys_verify,unique_key" }
 )
 
@@ -525,7 +526,13 @@ function Process-PortData {
 
     $persportHash = @{}
     if ($PersportTable) {
-        foreach ($row in $PersportTable) { $key = "$($row.domain)|$($row.switch_name)|$($row.extension)"; $persportHash[$key] = $row }
+        # Nur der erste Treffer je Nebenstelle zaehlt. Die ODF DISPLAY_NAME fuehrt
+        # "position" als Schluesselfeld und kann mehrere Eintraege je Nebenstelle
+        # liefern; ohne diese Pruefung wuerde der zuletzt gelesene gewinnen.
+        foreach ($row in $PersportTable) {
+            $key = "$($row.domain)|$($row.switch_name)|$($row.extension)"
+            if (-not $persportHash.ContainsKey($key)) { $persportHash[$key] = $row }
+        }
     }
 
     # --- Hashtable: PEN für HVT-Zuordnung (nur wenn -IncludePenData) ---
@@ -665,6 +672,7 @@ function Process-PortData {
                         e164_num            = $row1.e164_num
                         pen                 = $row1.pen
                         displayname         = $row1.displayname
+                        department          = if ($row6) { $row6.department } else { $null }
                         devconame           = $row1.devconame
                         devtext             = $row1.devtext
                         status              = $row1.status
@@ -716,6 +724,7 @@ function Process-PortData {
                     e164_num            = $row1.e164_num
                     pen                 = $row1.pen
                     displayname         = $row1.displayname
+                    department          = if ($row6) { $row6.department } else { $null }
                     devconame           = $row1.devconame
                     devtext             = $row1.devtext
                     status              = $row1.status

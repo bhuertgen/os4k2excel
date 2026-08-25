@@ -196,7 +196,7 @@ The script queries these tables through `api2hipath.exe`:
 | `HUNTGRP_SERVICE` | hunt group services |
 | `PICKUPGRP` | pickup groups |
 | `PICKUP_SUB` | pickup group members |
-| `PERSPORT` | port connection types |
+| `PERSPORT` | port connection types and the department of each station |
 | `DEVCONST` | device configurations |
 | `PORT` | queried per site (domain/switch) |
 | `PEN` | Physical Equipment Numbers with MDF assignment — only with `-IncludePenData` |

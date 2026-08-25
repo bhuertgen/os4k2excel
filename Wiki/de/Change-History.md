@@ -1,5 +1,13 @@
 # Change History
 
+## Version M31.20260825 (Meilenstein 31)
+
+| Datum | Änderung |
+|---|---|
+| 2026-08-25 | **Neu:** Spalte `department` (Abteilung) direkt hinter `displayname` in den Standort-Blättern und im Blatt "Gesamt" (Issue #5) |
+| 2026-08-25 | Der Wert stammt aus der ohnehin abgefragten Tabelle PERSPORT — kein zusätzlicher API-Aufruf, keine Mehrlaufzeit |
+| 2026-08-25 | Beim Nachschlagen in PERSPORT gewinnt jetzt der **erste** Treffer je Nebenstelle statt des letzten. Die ODF DISPLAY_NAME führt `position` als Schlüsselfeld und kann mehrere Einträge liefern |
+
 ## Version M30.20260730 (Meilenstein 30)
 
 | Datum | Änderung |

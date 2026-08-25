@@ -101,7 +101,7 @@ was retrieved, and for performance analysis.
 | **HUNTGRP_SERVICE** | hunt group services |
 | **PICKUPGRP** | pickup groups |
 | **PICKUP_SUB** | pickup group members |
-| **PERSPORT** | port connection types |
+| **PERSPORT** | port connection types, department |
 | **DEVCONST** | device configurations |
 | **PORT** | port data, queried per domain/switch |
 | **PEN** | Physical Equipment Numbers with MDF assignment, only with `-IncludePenData` |

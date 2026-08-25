@@ -2,6 +2,14 @@
 
 *Diese Seite auf Deutsch: [Change History](../de/Change-History.md)*
 
+## Version M31.20260825 (milestone 31)
+
+| Date | Change |
+|---|---|
+| 2026-08-25 | **New:** `department` column directly after `displayname`, on the per-site sheets and on "Gesamt" (issue #5) |
+| 2026-08-25 | the value comes from the PERSPORT table the script already queries — no extra API call, no extra runtime |
+| 2026-08-25 | the PERSPORT lookup now keeps the **first** match per station instead of the last. ODF DISPLAY_NAME carries `position` as a key field and can return several records |
+
 ## Version M30.20260730 (milestone 30)
 
 | Date | Change |

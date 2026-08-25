@@ -101,7 +101,7 @@ Das Script extrahiert automatisch folgende Tabellen aus der OpenScape 4000:
 | **HUNTGRP_SERVICE** | Sammelanschluss-Dienste | variabel |
 | **PICKUPGRP** | Rufannahmegruppen | variabel |
 | **PICKUP_SUB** | Mitglieder der Pickupgruppen | variabel |
-| **PERSPORT** | Port-Verbindungstypen | variabel |
+| **PERSPORT** | Port-Verbindungstypen, Abteilung | variabel |
 | **DEVCONST** | Gerätekonfigurationen | variabel |
 | **PORT** | Port-Daten (pro Domain/Switch) | variabel |
 

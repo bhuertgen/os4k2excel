@@ -15,7 +15,7 @@ Das Skript ruft via `api2hipath.exe` folgende Tabellen aus der OpenScape 4000 ab
 | **HUNTGRP_SERVICE** | Sammelanschluss-Dienste |
 | **PICKUPGRP** | Rufannahmegruppen — **NEU (M26)** |
 | **PICKUP_SUB** | Mitglieder der Rufannahmegruppen — **NEU (M26)** |
-| **PERSPORT** | Port-Verbindungstypen |
+| **PERSPORT** | Port-Verbindungstypen, Abteilung |
 | **DEVCONST** | Geraetekonfigurationen |
 
 Zusaetzlich wird pro Standort (Domain/Switch) die **PORT**-Tabelle abgerufen.
